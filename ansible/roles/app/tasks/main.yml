@@ -1,0 +1,8 @@
+---
+# Приложение + Gateway/HTTPRoute + PodMonitor + datasource Loki — один Helm-чарт.
+- name: Deploy demo chart
+  ansible.builtin.command: >
+    helm upgrade --install demo {{ repo_root }}/charts/demo
+    --namespace demo --create-namespace
+    --set gateway.nodePort={{ gateway_nodeport_http }}
+    --wait --timeout 5m

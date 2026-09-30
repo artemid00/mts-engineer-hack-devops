@@ -1,0 +1,15 @@
+---
+- name: Add prometheus-community repo
+  ansible.builtin.command: helm repo add prometheus-community https://prometheus-community.github.io/helm-charts --force-update
+  changed_when: false
+
+- name: Install/upgrade kube-prometheus-stack
+  ansible.builtin.shell: >
+    helm upgrade --install kps prometheus-community/kube-prometheus-stack
+    --namespace monitoring --create-namespace
+    {% if kube_prometheus_stack_version %}--version {{ kube_prometheus_stack_version }}{% endif %}
+    -f {{ repo_root }}/k8s/monitoring/values.yaml
+    --set grafana.adminPassword="${GRAFANA_ADMIN_PASSWORD:-admin-change-me}"
+    --wait --timeout 10m
+  args:
+    executable: /bin/bash

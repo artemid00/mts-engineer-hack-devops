@@ -1,0 +1,11 @@
+---
+- name: Gateway API, monitoring, logging, demo app
+  hosts: k8s_node
+  become: true
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  roles:
+    - gateway_api
+    - monitoring
+    - logging
+    - app

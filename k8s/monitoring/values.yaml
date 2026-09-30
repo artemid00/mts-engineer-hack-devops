@@ -1,0 +1,16 @@
+# kube-prometheus-stack: демо-конфигурация для одного узла (без PV).
+prometheus:
+  prometheusSpec:
+    retention: 2d
+    # подхватывать ServiceMonitor/PodMonitor из любых namespace и без label release=
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+alertmanager:
+  enabled: false
+grafana:
+  enabled: true
+  sidecar:
+    datasources:
+      enabled: true
+      label: grafana_datasource
+      searchNamespace: ALL

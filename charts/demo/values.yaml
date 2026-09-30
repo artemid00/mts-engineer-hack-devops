@@ -1,0 +1,23 @@
+replicaCount: 2
+image:
+  repository: nginxinc/nginx-unprivileged
+  tag: 1.27-alpine
+resources:
+  requests: { cpu: 10m, memory: 16Mi }
+  limits: { cpu: 200m, memory: 64Mi }
+
+gateway:
+  enabled: true
+  className: envoy
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+  envoyNamespace: envoy-gateway-system
+  nodePort: 30080
+  hostname: ""          # пусто = любой Host
+
+monitoring:
+  enabled: true         # PodMonitor/ServiceMonitor для Envoy (нужны CRD kube-prometheus-stack)
+  namespace: monitoring
+
+logging:
+  grafanaDatasource: true   # Loki datasource для Grafana
+  lokiUrl: http://loki.logging.svc.cluster.local:3100

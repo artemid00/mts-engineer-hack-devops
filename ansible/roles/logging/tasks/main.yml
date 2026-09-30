@@ -1,0 +1,27 @@
+---
+- name: Add grafana and fluent helm repos
+  ansible.builtin.command: "helm repo add {{ item.name }} {{ item.url }} --force-update"
+  loop:
+    - { name: grafana, url: "https://grafana.github.io/helm-charts" }
+    - { name: fluent, url: "https://fluent.github.io/helm-charts" }
+  changed_when: false
+
+- name: Install/upgrade Loki (single binary)
+  ansible.builtin.shell: >
+    helm upgrade --install loki grafana/loki
+    --namespace logging --create-namespace
+    {% if loki_chart_version %}--version {{ loki_chart_version }}{% endif %}
+    -f {{ repo_root }}/k8s/logging/values-loki.yaml
+    --wait --timeout 10m
+  args:
+    executable: /bin/bash
+
+- name: Install/upgrade Fluent Bit
+  ansible.builtin.shell: >
+    helm upgrade --install fluent-bit fluent/fluent-bit
+    --namespace logging
+    {% if fluent_bit_chart_version %}--version {{ fluent_bit_chart_version }}{% endif %}
+    -f {{ repo_root }}/k8s/logging/values-fluentbit.yaml
+    --wait --timeout 5m
+  args:
+    executable: /bin/bash

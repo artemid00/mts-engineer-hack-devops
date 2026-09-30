@@ -1,0 +1,38 @@
+---
+# Single-node kubeadm: control-plane и рабочая нагрузка на одном хосте.
+# Идемпотентно: kubeadm init выполняется только если нет admin.conf.
+
+- name: Check initialization
+  ansible.builtin.stat:
+    path: /etc/kubernetes/admin.conf
+  register: kubeadm_init
+
+- name: Init kubeadm (single node)
+  ansible.builtin.command: >
+    kubeadm init
+    --pod-network-cidr={{ pod_network_cidr }}
+    --cri-socket=unix:///var/run/crio/crio.sock
+    --kubernetes-version=stable-{{ k8s_version }}
+  when: not kubeadm_init.stat.exists
+
+- name: Create kube config dir
+  ansible.builtin.file:
+    path: /root/.kube
+    state: directory
+    mode: "0700"
+
+- name: Copy admin kubeconfig
+  ansible.builtin.copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /root/.kube/config
+    remote_src: true
+    mode: "0600"
+
+- name: Allow workloads on control-plane node
+  ansible.builtin.command: >
+    kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  register: untaint
+  changed_when: "'untainted' in untaint.stdout"
+  failed_when: untaint.rc != 0 and 'not found' not in untaint.stderr

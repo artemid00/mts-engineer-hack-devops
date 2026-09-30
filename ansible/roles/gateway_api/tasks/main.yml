@@ -1,0 +1,10 @@
+---
+# Envoy Gateway (чарт ставит и Gateway API CRD). Ресурсы GatewayClass/Gateway/HTTPRoute
+# входят в чарт charts/demo (роль app). Идемпотентно: helm upgrade --install.
+
+- name: Install/upgrade Envoy Gateway
+  ansible.builtin.command: >
+    helm upgrade --install eg oci://docker.io/envoyproxy/gateway-helm
+    --version {{ envoy_gateway_version }}
+    --namespace envoy-gateway-system --create-namespace
+    --wait --timeout 5m

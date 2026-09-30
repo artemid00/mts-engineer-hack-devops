@@ -1,0 +1,17 @@
+{{- if .Values.logging.grafanaDatasource }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasource-loki
+  namespace: {{ .Values.monitoring.namespace }}
+  labels:
+    grafana_datasource: "1"
+data:
+  loki.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Loki
+        type: loki
+        access: proxy
+        url: {{ .Values.logging.lokiUrl }}
+{{- end }}

@@ -1,0 +1,33 @@
+{{- if .Values.monitoring.enabled }}
+# Метрики Envoy-прокси (data plane Gateway): запросы, коды ответов, latency.
+# Обязательное требование закрывается штатными target'ами kube-prometheus-stack
+# (apiserver, kubelet, node-exporter ...); это — дополнительные метрики.
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: envoy-proxy
+  namespace: {{ .Values.monitoring.namespace }}
+spec:
+  namespaceSelector:
+    matchNames: [{{ .Values.gateway.envoyNamespace }}]
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: envoy
+  podMetricsEndpoints:
+    - port: metrics
+      path: /stats/prometheus
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: envoy-gateway-controller
+  namespace: {{ .Values.monitoring.namespace }}
+spec:
+  namespaceSelector:
+    matchNames: [{{ .Values.gateway.envoyNamespace }}]
+  selector:
+    matchLabels:
+      control-plane: envoy-gateway
+  endpoints:
+    - port: metrics
+{{- end }}

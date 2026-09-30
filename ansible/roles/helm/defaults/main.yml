@@ -1,0 +1,4 @@
+---
+# defaults file for helm
+
+helm_version: "3.17.1"

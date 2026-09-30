@@ -1,0 +1,8 @@
+*.kubeconfig
+kubeconfig
+admin.conf
+.env
+*.key
+*.pem
+.vault_pass
+*.retry

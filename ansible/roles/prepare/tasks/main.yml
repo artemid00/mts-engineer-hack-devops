@@ -1,0 +1,44 @@
+---
+# tasks file for prepare
+
+- name: Check if swap is enabled
+  ansible.builtin.command: swapon -s
+  register: swap_status
+  changed_when: false
+
+- name: Disable swap
+  ansible.builtin.command: swapoff -a
+  when: swap_status.stdout != ""
+
+- name: Remove swap from fstab
+  ansible.builtin.replace:
+    path: /etc/fstab
+    regexp: '^\s*([^#].*\sswap\s.*)$'
+    replace: '# \1'
+
+- name: Load kernel modules
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - br_netfilter
+    - overlay
+
+- name: Set kernel modules
+  ansible.builtin.copy:
+    dest: /etc/modules-load.d/k8s.conf
+    content: |
+      br_netfilter
+      overlay
+ 
+- name: Set sysctl params
+  ansible.posix.sysctl:
+    name: "{{ item }}"
+    value: "1"
+    state: present
+    reload: yes
+  loop:
+    - net.ipv4.ip_forward
+    - net.bridge.bridge-nf-call-iptables
+    - net.bridge.bridge-nf-call-ip6tables
+

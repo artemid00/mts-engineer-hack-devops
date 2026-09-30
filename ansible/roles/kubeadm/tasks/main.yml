@@ -1,0 +1,35 @@
+﻿---
+# tasks file for kubelet
+
+- name: Install required utils
+  ansible.builtin.apt:
+    name:
+      - curl
+      - ca-certificates
+      - gpg
+      - apt-transport-https
+      - python3-debian
+    state: present
+    update_cache: yes
+
+- name: Add Kubernetes repository 
+  ansible.builtin.deb822_repository:
+    name: kubernetes
+    types: deb
+    uris: "https://pkgs.k8s.io/core/stable/v{{ k8s_version }}/deb/"
+    suites: "/"
+    components: [""]
+    signed_by: "https://pkgs.k8s.io/core/stable/v{{ k8s_version }}/deb/Release.key"
+    state: present
+
+- name: Install kubeadm
+  ansible.builtin.apt:
+    name: "kubeadm={{ k8s_version }}*"
+    state: present
+    update_cache: yes
+
+- name: Hold kubeadm version
+  ansible.builtin.dpkg_selections:
+    name: kubeadm
+    selection: hold
+

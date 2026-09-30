@@ -1,0 +1,34 @@
+---
+# tasks file for cri-o
+
+- name: Install required utils
+  ansible.builtin.apt:
+    name:
+      - curl
+      - software-properties-common
+      - gpg
+      - python3-debian  
+    state: present
+    update_cache: yes
+
+- name: Add CRI-O repository 
+  ansible.builtin.deb822_repository:
+    name: cri-o
+    types: deb
+    uris: "https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ crio_version }}/deb"
+    suites: "/"
+    components: [""]
+    signed_by: "https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ crio_version }}/deb/Release.key"
+    state: present
+
+- name: Install CRI-O
+  ansible.builtin.apt:
+    name: cri-o
+    state: present
+    update_cache: yes
+
+- name: Start CRI-O
+  ansible.builtin.systemd:
+    name: cri-o
+    state: started
+    enabled: yes

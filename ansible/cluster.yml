@@ -1,0 +1,13 @@
+---
+- name: Single-node Kubernetes (kubeadm + CRI-O + Cilium)
+  hosts: k8s_node
+  become: true
+  roles:
+    - prepare
+    - cri-o
+    - kubelet
+    - kubeadm
+    - kubectl
+    - init_master
+    - helm
+    - cilium

@@ -1,0 +1,26 @@
+---
+# Cilium как CNI (kube-proxy остаётся штатным — проще и надёжнее на одном узле).
+# Gateway API реализует Envoy Gateway (роль gateway_api), поэтому gatewayAPI в Cilium выключен.
+# Шаги идемпотентны (helm upgrade --install).
+
+- name: Add Cilium Helm repository
+  ansible.builtin.command: helm repo add cilium https://helm.cilium.io/ --force-update
+  changed_when: false
+
+- name: Install/upgrade Cilium via Helm
+  ansible.builtin.command: >
+    helm upgrade --install cilium cilium/cilium
+    --version {{ cilium_version }}
+    --namespace kube-system
+    --set ipam.mode=cluster-pool
+    --set ipam.operator.clusterPoolIPv4PodCIDRList={{ pod_network_cidr }}
+    --set operator.replicas=1
+    --wait --timeout 5m
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+- name: Wait for node to become Ready
+  ansible.builtin.command: kubectl wait --for=condition=Ready node --all --timeout=300s
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  changed_when: false
