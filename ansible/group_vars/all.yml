@@ -2,18 +2,21 @@
 # Единое место для версий. README ссылается на этот файл.
 k8s_version: "1.36"          # minor-версия Kubernetes (pkgs.k8s.io)
 crio_version: "v1.36"
-helm_version: "3.17.1"
-cilium_version: "1.19.0"
+# Репозиторий пакетов Kubernetes. pkgs.k8s.io отдаёт 403 из РФ, поэтому по умолчанию зеркало Яндекса.
+# Вне РФ можно переопределить: -e k8s_pkgs_base=https://pkgs.k8s.io
+k8s_pkgs_base: "https://mirror.yandex.ru/mirrors/pkgs.k8s.io"
+helm_version: "3.22.0"
+cilium_version: "1.20.2"
 pod_network_cidr: "10.244.0.0/16"
 
 # Gateway API: реализация — Envoy Gateway (чарт включает Gateway API CRD).
-# Закрепите версии после первого успешного прогона (helm list -A).
-envoy_gateway_version: "v1.5.0"
+# Версии сверены 2026-09-30 (EG v1.9 тестируется с Kubernetes 1.33-1.36, Gateway API v1.6.1).
+envoy_gateway_version: "v1.9.2"
 gateway_nodeport_http: 30080
 
-# Observability. Пусто = последняя версия чарта; для воспроизводимости зафиксируйте.
-kube_prometheus_stack_version: ""
-loki_chart_version: ""
-fluent_bit_chart_version: ""
+# Observability (Helm-чарты; Loki — community-чарт grafana-community, grafana/loki предназначен для Enterprise).
+kube_prometheus_stack_version: "91.8.2"
+loki_chart_version: "18.13.7"
+fluent_bit_chart_version: "0.58.2"
 
 repo_root: "{{ playbook_dir }}/.."

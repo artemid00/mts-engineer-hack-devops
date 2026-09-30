@@ -18,16 +18,17 @@
 | ОС (тестировалось) | Ubuntu 24.04 — TODO: подтвердить после прогона |
 | Kubernetes (kubeadm) | 1.36 |
 | CRI | CRI-O v1.36 |
-| CNI | Cilium 1.19.0 |
-| Gateway API реализация | Envoy Gateway v1.5.0 (ресурсы: GatewayClass, EnvoyProxy, Gateway, HTTPRoute) |
-| Мониторинг | kube-prometheus-stack (Helm) — TODO: версия |
-| Логи | Fluent Bit + Loki (Helm) — TODO: версии |
+| CNI | Cilium 1.20.2 |
+| Gateway API реализация | Envoy Gateway v1.9.2 (Gateway API CRD v1.6.1) (ресурсы: GatewayClass, EnvoyProxy, Gateway, HTTPRoute) |
+| Мониторинг | kube-prometheus-stack 91.8.2 (Helm) |
+| Логи | Fluent Bit chart 0.58.2 (app 5.1.2) + Loki chart 18.13.7 (app 3.7.8) |
 
 ## Требования
 Чистая VM Ubuntu 24.04, 4 vCPU / 8 ГБ RAM / 30 ГБ диска, доступ в интернет, root/sudo.
 
 ## Развёртывание
 ```bash
+sudo apt-get update && sudo apt-get install -y git make   # на чистой Ubuntu их нет
 git clone <URL> && cd mts-engineers-hack-devops
 export GRAFANA_ADMIN_PASSWORD='<свой пароль>'   # опционально
 sudo -E make deps cluster deploy

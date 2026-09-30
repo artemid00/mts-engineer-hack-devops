@@ -1,4 +1,4 @@
-﻿---
+---
 # tasks file for kubelet
 
 - name: Install required utils
@@ -16,10 +16,10 @@
   ansible.builtin.deb822_repository:
     name: kubernetes
     types: deb
-    uris: "https://pkgs.k8s.io/core/stable/v{{ k8s_version }}/deb/"
+    uris: "{{ k8s_pkgs_base }}/core/stable/v{{ k8s_version }}/deb/"
     suites: "/"
     components: [""]
-    signed_by: "https://pkgs.k8s.io/core/stable/v{{ k8s_version }}/deb/Release.key"
+    signed_by: "{{ k8s_pkgs_base }}/core/stable/v{{ k8s_version }}/deb/Release.key"
     state: present
 
 - name: Install kubeadm

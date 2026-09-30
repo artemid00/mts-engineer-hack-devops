@@ -1,14 +1,14 @@
 ---
-- name: Add grafana and fluent helm repos
+- name: Add grafana-community and fluent helm repos
   ansible.builtin.command: "helm repo add {{ item.name }} {{ item.url }} --force-update"
   loop:
-    - { name: grafana, url: "https://grafana.github.io/helm-charts" }
+    - { name: grafana-community, url: "https://grafana-community.github.io/helm-charts" }
     - { name: fluent, url: "https://fluent.github.io/helm-charts" }
   changed_when: false
 
 - name: Install/upgrade Loki (single binary)
   ansible.builtin.shell: >
-    helm upgrade --install loki grafana/loki
+    helm upgrade --install loki grafana-community/loki
     --namespace logging --create-namespace
     {% if loki_chart_version %}--version {{ loki_chart_version }}{% endif %}
     -f {{ repo_root }}/k8s/logging/values-loki.yaml
