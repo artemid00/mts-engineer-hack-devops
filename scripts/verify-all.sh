@@ -16,7 +16,7 @@ echo "== 2. Prometheus =="
 kubectl -n monitoring port-forward svc/kps-kube-prometheus-stack-prometheus 9090:9090 >/dev/null 2>&1 &
 PF=$!; trap 'kill $PF 2>/dev/null || true' EXIT; sleep 5
 echo "targets up: $(curl -fsS 'localhost:9090/api/v1/query?query=count(up==1)' | sed 's/.*"value":\[[^,]*,"\([0-9]*\)".*/\1/')"
-curl -fsS 'localhost:9090/api/v1/query?query=up{job="apiserver"}' | head -c 300; echo
+curl -fsSG 'localhost:9090/api/v1/query' --data-urlencode 'query=up{job="apiserver"}' | head -c 300; echo
 
 echo "== 3. Логи (Loki) =="
 MARK="verify-$(date +%s)"
