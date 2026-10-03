@@ -15,6 +15,7 @@ config:
         Merge_Log           Off
         K8S-Logging.Parser  Off
         Labels              On
+        Buffer_Size         256k
         Annotations         Off
   outputs: |
     [OUTPUT]

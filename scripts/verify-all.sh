@@ -24,6 +24,6 @@ curl -fsS "http://${NODE_IP}:${NODEPORT}/${MARK}" >/dev/null
 kubectl -n logging port-forward svc/loki 3100:3100 >/dev/null 2>&1 &
 PF2=$!; trap 'kill $PF $PF2 2>/dev/null || true' EXIT; sleep 10
 curl -fsSG 'localhost:3100/loki/api/v1/query_range' \
-  --data-urlencode "query={namespace_name=\"demo\"} |= \"${MARK}\"" | grep -q "${MARK}" \
+  --data-urlencode "query={kubernetes_namespace_name=\"demo\"} |= \"${MARK}\"" | grep -q "${MARK}" \
   && echo "запись ${MARK} найдена в Loki" || { echo "запись не найдена"; exit 1; }
 echo "OK"

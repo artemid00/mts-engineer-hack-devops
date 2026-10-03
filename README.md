@@ -40,7 +40,7 @@ sudo make verify
 - **Gateway API:** `curl http://<IP узла>:30080/` → `Hello World!`; `kubectl -n demo get gateway,httproute`.
 - **Мониторинг:** `kubectl -n monitoring port-forward svc/kps-kube-prometheus-stack-prometheus 9090` →
   Status → Targets (UP); запрос `up`, `rate(apiserver_request_total[5m])`.
-- **Логи:** после `curl` — в Grafana (Explore → Loki) запрос `{namespace_name="demo"}`;
+- **Логи:** после `curl` — в Grafana (Explore → Loki) запрос `{kubernetes_namespace_name="demo"}`;
   автоматически: `scripts/verify-all.sh`.
 
 ## Дополнительно
