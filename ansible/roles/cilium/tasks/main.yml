@@ -19,6 +19,35 @@
   environment:
     KUBECONFIG: /etc/kubernetes/admin.conf
 
+# На первом старте поды (coredns) иногда застревают в ContainerCreating: агент Cilium не успел
+# подготовить CNI. Лечится перезапуском агента, поэтому ждём coredns и при неудаче перезапускаем.
+- name: Wait for CoreDNS
+  ansible.builtin.command: kubectl -n kube-system rollout status deploy/coredns --timeout=120s
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  register: coredns_wait
+  failed_when: false
+  changed_when: false
+
+- name: Restart Cilium agent if CoreDNS is stuck
+  ansible.builtin.command: kubectl -n kube-system rollout restart ds/cilium
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  when: coredns_wait.rc != 0
+
+- name: Recreate stuck CoreDNS pods
+  ansible.builtin.command: kubectl -n kube-system delete pod -l k8s-app=kube-dns
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  when: coredns_wait.rc != 0
+
+- name: Wait for CoreDNS after Cilium restart
+  ansible.builtin.command: kubectl -n kube-system rollout status deploy/coredns --timeout=300s
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+  changed_when: false
+  when: coredns_wait.rc != 0
+
 - name: Wait for node to become Ready
   ansible.builtin.command: kubectl wait --for=condition=Ready node --all --timeout=300s
   environment:
