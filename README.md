@@ -47,7 +47,7 @@
 
 ```bash
 sudo apt-get update && sudo apt-get install -y git make
-git clone <URL репозитория> && cd mts-engineers-hack-devops
+git clone https://github.com/artemid00/mts-engineer-hack-devops.git && cd mts-engineer-hack-devops
 chmod +x scripts/*.sh
 
 export GRAFANA_ADMIN_PASSWORD='<свой пароль>'   # необязательно; без него будет admin-change-me
